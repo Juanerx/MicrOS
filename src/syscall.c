@@ -93,7 +93,8 @@ void do_syscall(Context *c) {
       break;
 
     case SYS_exit:  
-       c->GPRx = 1;
+      // halt(0);
+      naive_uload(NULL, "/bin/menu");
       break;
 
     default: panic("Unhandled syscall ID = %d", a[0]);
