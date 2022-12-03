@@ -10,6 +10,11 @@ int fs_close(int fd);
 size_t fs_lseek(int fd, size_t offset, int whence);
 size_t fs_write(int fd, const void *buf, size_t len);
 void naive_uload(PCB *pcb, const char *filename);
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[]);
+void switch_boot_pcb();
+int sys_execve(char* pathname,char * const argv[],char* const envp[]);
+int mm_brk(uintptr_t brk);
+extern PCB* current;
 
 void strace(uintptr_t *p){
   switch (*p)
@@ -67,7 +72,7 @@ void do_syscall(Context *c) {
       break;
 
     case SYS_brk:
-      c->GPRx = 0;
+      c->GPRx = mm_brk(a[1]);
       break;
 
     case SYS_gettimeofday:
@@ -80,23 +85,23 @@ void do_syscall(Context *c) {
       break;
 
     case SYS_execve:
-        ; // empty statement 
-      const char *envp = (const char *)a[3];
-      char pathname[64];
-      /* assuming only one environment value.
-        user should input e.g. nslider */
-      if (strlen(envp) > 2)
-        sprintf(pathname, "%s/%s", envp, (const char*)a[1]);
-      else
-        sprintf(pathname, "%s", (const char*)a[1]);
-      naive_uload(NULL, pathname);
+      c->GPRx = sys_execve((char *)a[1], (char* const*)a[2], (char* const*)a[3]);
       break;
 
     case SYS_exit:  
-      // halt(0);
-      naive_uload(NULL, "/bin/menu");
+      halt(0);
+      // naive_uload(NULL, "/bin/menu");
       break;
 
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
+}
+
+int sys_execve(char* pathname,char * const argv[],char* const envp[]){
+  int ret = fs_open(pathname, 0, 0);
+  if (ret == -1) return -2;
+  context_uload(current, pathname, argv, NULL);
+  switch_boot_pcb();
+  yield();
+  return 0;
 }
