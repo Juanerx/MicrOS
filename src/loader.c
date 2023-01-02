@@ -151,6 +151,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   karea.end = &pcb->cp + STACK_SIZE;
   uintptr_t entry = loader(pcb, filename);
   pcb->cp = ucontext(&pcb->as, karea, (void *)entry);
+  // pcb->cp->mscratch = (uintptr_t)uarea.start; // ???不用加
   pcb->cp->GPRx = (uintptr_t)uarea.start;
 
   // printf("argc: %d\n", argc);

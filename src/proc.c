@@ -20,16 +20,17 @@ void hello_fun(void *arg) {
     if (j % 1000 == 0)
       Log("Hello World from Nanos-lite with arg %s for the %dth time!", (char *)arg, j / 1000);
     j ++;
-    yield();
+    // yield();
   }
 }
 
 void init_proc() {
   // char *argv1[] = {"--skip", NULL};
   // char *argv2[] = {"/bin/nterm", NULL};
-  context_kload(&pcb[0], hello_fun, "hello");
-  context_uload(&pcb[1], "/bin/pal", NULL, NULL);
-  // context_uload(&pcb[1], "/bin/dummy", NULL, NULL);
+  // context_kload(&pcb[0], hello_fun, "hello");
+  // context_uload(&pcb[1], "/bin/pal", NULL, NULL);
+  context_uload(&pcb[0], "/bin/hello", NULL, NULL);
+  context_uload(&pcb[1], "/bin/nterm", NULL, NULL);
   switch_boot_pcb();
 
   Log("Initializing processes...");
