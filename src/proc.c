@@ -27,7 +27,7 @@ void hello_fun(void *arg) {
 void init_proc() {
   // char *argv1[] = {"--skip", NULL};
   // char *argv2[] = {"/bin/nterm", NULL};
-  // context_kload(&pcb[0], hello_fun, "hello");
+  // context_kload(&pcb[1], hello_fun, "hello");
   // context_uload(&pcb[1], "/bin/pal", NULL, NULL);
   context_uload(&pcb[0], "/bin/hello", NULL, NULL);
   context_uload(&pcb[1], "/bin/nterm", NULL, NULL);
@@ -45,7 +45,7 @@ Context* schedule(Context *prev) {
 
   // always select pcb[0] as the new process
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-
+  // printf("sp and ksp is %p, %p\n", current->cp, current->cp->np);
   // then return the new context
   return current->cp;
 }

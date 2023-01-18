@@ -153,6 +153,7 @@ void context_uload(PCB *pcb, const char *filename, char *const argv[], char *con
   pcb->cp = ucontext(&pcb->as, karea, (void *)entry);
   // pcb->cp->mscratch = (uintptr_t)uarea.start; // ???不用加
   pcb->cp->GPRx = (uintptr_t)uarea.start;
+  pcb->cp->gpr[2] = (uintptr_t)uarea.start;
 
   // printf("argc: %d\n", argc);
   // printf("pcb->cp->GPRx: %d\n", *(uintptr_t *)pcb->cp->GPRx);
